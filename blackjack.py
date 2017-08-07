@@ -17,10 +17,11 @@ class Player(object):
         return "[ {}, your balance is {} ]".format(self.name, self.balance)
 
 class Card(object):
-    def __init__(self, suit, rank, available = True):
+    def __init__(self, suit, rank, available = True, highest_value = True):
         self.suit = suit
         self.rank = rank
         self.available = available
+        self.highest_value = highest_value
 
     def __str__(self):
         return "[ {} / {} ]".format(self.suit, self.rank)
@@ -53,7 +54,28 @@ def playing():
     hitting(player)
     hitting(dealer)
     hitting(dealer)
-
+    display_hand(dealer)
+    display_hand(player)
+    keep_playing = True
+    while keep_playing:
+        print ("Your score is {}".format(counting()))
+        if counting() == 21:
+            print ("BLACKJACK")
+        else:
+            valid_answer = False
+            while not valid_answer:
+                answer = asking_user("Press H to hit or S to stay").lower()
+                if (answer == "h" or answer == "s"):
+                    valid_answer = True
+                    if answer == "h":
+                        hitting(player)
+                        display_hand(player)
+                    elif answer == "s":
+                        print ("Stay")
+                        keep_playing = False
+                else:
+                    print ("Not a valid answer")
+        
 def hitting(turn):
     global player
     global dealer
@@ -66,9 +88,45 @@ def hitting(turn):
             if turn == dealer:
                 dealer.hand.append(card)
             deck[card].available = False
-            got_card = True            
+            got_card = True
             
-playing()
-print (player.hand)
-print (dealer.hand)
+def display_hand(turn):
+    if turn == player:
+        print("Your hand is:")
+        for card in player.hand:
+            print (deck[card])
+    if turn == dealer:
+        print ("I have two cards, but you can only see this one")
+        print (deck[dealer.hand[1]])
 
+def counting():
+    score = 0
+    for card in player.hand:
+        score += value(card)
+    if score > 21:
+        for card in player.hand:
+            if deck[card].rank == "Ace":
+                if deck[card].highest_value:
+                    score = score - 10
+                    deck[card].highest_value = False
+                    break
+    return score
+
+def value(card):
+    if (deck[card].rank == "2" or deck[card].rank == "3" or
+        deck[card].rank == "4" or deck[card].rank == "5" or
+        deck[card].rank == "6" or deck[card].rank == "7" or
+        deck[card].rank == "8" or deck[card].rank == "9" or
+        deck[card].rank == "10"):
+        val = int(deck[card].rank)
+    elif (deck[card].rank == "Jack" or deck[card].rank == "Queen" or
+          deck[card].rank == "King"):
+        val = 10
+    elif (deck[card].rank == "Ace"):
+        if deck[card].highest_value:
+            val = 11
+        else:
+            val = 1
+    return val
+
+playing()
