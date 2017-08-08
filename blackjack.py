@@ -50,31 +50,40 @@ def playing():
     player = Player(asking_user("Type in your name"),1000)
     dealer = Dealer()
     print ("Welcome {}, let's start playing".format(player.name))
+
     hitting(player)
     hitting(player)
     hitting(dealer)
     hitting(dealer)
-    display_hand(dealer)
     display_hand(player)
+
     keep_playing = True
-    while keep_playing:
+    if counting() == 21:
         print ("Your score is {}".format(counting()))
-        if counting() == 21:
-            print ("BLACKJACK")
-        else:
-            valid_answer = False
-            while not valid_answer:
-                answer = asking_user("Press H to hit or S to stay").lower()
-                if (answer == "h" or answer == "s"):
-                    valid_answer = True
-                    if answer == "h":
-                        hitting(player)
-                        display_hand(player)
-                    elif answer == "s":
-                        print ("Stay")
-                        keep_playing = False
-                else:
-                    print ("Not a valid answer")
+        print ("BLACKJACK")
+        keep_playing = False
+
+    while keep_playing:
+        valid_answer = False
+        busted = False
+        print ("Your score is {}".format(counting()))
+        if counting() > 21:
+            print ("You've busted - This is an automatic loss")
+            busted = True
+            keep_playing = False
+        
+        while not valid_answer and not busted:
+            answer = asking_user("Press H to hit or S to stay").lower()
+            if (answer == "h" or answer == "s"):
+                valid_answer = True
+                if answer == "h":
+                    hitting(player)
+                    display_hand(player)
+                elif answer == "s":
+                    print ("Stay")
+                    keep_playing = False
+            else:
+                print ("Not a valid answer")
         
 def hitting(turn):
     global player
@@ -92,13 +101,16 @@ def hitting(turn):
             
 def display_hand(turn):
     if turn == player:
+        print ("I have two cards, but you can only see this one")
+        print (deck[dealer.hand[0]])
         print("Your hand is:")
         for card in player.hand:
             print (deck[card])
     if turn == dealer:
-        print ("I have two cards, but you can only see this one")
-        print (deck[dealer.hand[1]])
-
+        print ("This is my hand")
+        for card in dealer.hand:
+            print (deck[card])
+        
 def counting():
     score = 0
     for card in player.hand:
