@@ -52,20 +52,11 @@ player = None
 dealer = None
 
 def playing():
-    print ("Welcome {}, let's start playing".format(player.name))
-    hitting(player)
-    hitting(dealer)
-    hitting(player)
-    hitting(dealer)
-    display_hand(player)
-
     keep_playing = True
     if counting(player) == 21:
         print ("BLACKJACK")
         keep_playing = False
         player.blackjack = True
-        
-
     while keep_playing:
         valid_answer = False
         if counting(player) > 21:
@@ -85,9 +76,6 @@ def playing():
             else:
                 print ("Not a valid answer")
 
-    dealer_turn()
-    winning()
-        
 def hitting(turn):
     got_card = False
     while not got_card:
@@ -143,6 +131,11 @@ def value(card):
 
 def dealer_turn():
     staying = False
+    if counting(dealer) == 21:
+        display_hand(dealer)
+        print ("I have a BLACKJACK!")
+        staying = True
+        dealer.blackjack = True
     while not staying and not player.busted:
         display_hand(dealer)
         if (counting(dealer) > 16 and counting(dealer) < 21):
@@ -158,7 +151,6 @@ def dealer_turn():
         elif counting(dealer) == 21:
             print ("I have a 21!")
             staying = True
-            dealer.blackjack = True
 
 def winning():
     global bet
@@ -180,6 +172,9 @@ def winning():
     elif counting(player) > counting(dealer):
         print ("You win, cause you're closer to 21")
         player.balance += (2 * bet)
+    elif counting(player) == counting(dealer):
+        print ("We're even")
+        player.balance += bet
     bet = 0
     
 def betting():
@@ -200,6 +195,7 @@ def begining():
     global player
     global dealer
     player = Player(asking_user("Type in your name"),1000)
+    print ("Welcome {}, let's start playing".format(player.name))
     dealer = Dealer()
     another_game = True
     
@@ -213,7 +209,17 @@ def begining():
 
         betting()      
         creating_deck()
+
+        hitting(player)
+        hitting(dealer)
+        hitting(player)
+        hitting(dealer)
+        display_hand(player)
+
         playing()
+
+        dealer_turn()
+        winning()
 
         valid_answer = False
         while not valid_answer:
