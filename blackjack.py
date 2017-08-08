@@ -185,6 +185,7 @@ def winning():
 def betting():
     global bet
     valid_bet = False
+    print ("Your current balance is {}".format(player.balance))
     while not valid_bet:
         try:
             bet = int(asking_user("How much do you want to bet?"))
@@ -222,10 +223,11 @@ def begining():
                 valid_answer = True
             elif answer == "n":
                 print("This is over")
+                print("You're closing your game with {}".format(player.balance))
                 valid_answer = True
                 another_game = False
             else:
                 print("I need a valid answer, either Y or N")
 
 begining()
-print (player.balance)
+
