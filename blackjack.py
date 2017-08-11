@@ -46,7 +46,7 @@ def creating_deck():
         for rank in ranks:
             deck.append(Card(suit, rank))
 
-asking_user = lambda question: raw_input(question)
+asking_user = lambda question: input(question)
 
 player = None
 dealer = None
